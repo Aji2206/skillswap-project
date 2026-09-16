@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sign In | SkillSwap{% endblock %}
+
+{% block content %}
+<div class="page-wrapper" style="display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
+    <div class="card-glass" style="width: 100%; max-width: 440px; padding: 36px 32px;">
+        <div style="text-align: center; margin-bottom: 26px;">
+            <a href="{% url 'home' %}" class="nav-brand" style="justify-content: center; margin-bottom: 16px;">
+                <span class="nav-brand-icon">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                </span>
+                <span class="nav-brand-title">Skill<span>Swap</span></span>
+            </a>
+            <h1 style="font-size: 2.4rem; font-weight: 800; color: var(--navy-900); margin-bottom: 6px;">Welcome Back</h1>
+            <p style="font-size: 1.45rem; color: var(--text-muted); margin: 0;">Sign in to your peer skill exchange account</p>
+        </div>
+
+        {% if form.errors %}
+            <div class="alert alert-danger" style="margin-bottom: 20px; font-size: 1.4rem;">
+                <i class="fa-solid fa-triangle-exclamation"></i> Invalid username or password. Please try again.
+            </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'login' %}" id="loginForm">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">
+                    <i class="fa-solid fa-user" style="color: var(--navy-700);"></i> Username
+                </label>
+                <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter your username" required autofocus autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <label for="id_password" style="margin-bottom: 0;">
+                        <i class="fa-solid fa-key" style="color: var(--navy-700);"></i> Password
+                    </label>
+                    <a href="{% url 'forgot_password' %}" style="font-size: 1.3rem; color: var(--navy-700); font-weight: 600; text-decoration: none;">Forgot password?</a>
+                </div>
+                <div style="position: relative;">
+                    <input type="password" name="password" id="id_password" class="form-control" placeholder="Enter your password" required autocomplete="current-password" style="padding-right: 44px;">
+                    <button type="button" class="toggle-password" data-target="id_password" aria-label="Toggle password visibility" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1.5rem; padding: 4px;">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 12px; font-size: 1.5rem;">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 1.45rem; color: var(--text-muted);">
+            Don't have an account?
+            <a href="{% url 'register' %}" style="color: var(--navy-900); font-weight: 600;">Create one for free</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

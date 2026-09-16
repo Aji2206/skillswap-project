@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Verify Code | SkillSwap{% endblock %}
+
+{% block content %}
+<div class="page-wrapper" style="display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
+    <div class="card-glass" style="width: 100%; max-width: 460px; padding: 38px 34px;">
+        <div style="text-align: center; margin-bottom: 26px;">
+            <div style="width: 56px; height: 56px; border-radius: 12px; background: rgba(15, 23, 42, 0.06); border: 1px solid rgba(15, 23, 42, 0.1); display: inline-flex; align-items: center; justify-content: center; color: var(--navy-900); font-size: 2.2rem; margin-bottom: 16px;">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h1 style="font-size: 2.4rem; font-weight: 800; color: var(--navy-900); margin-bottom: 6px;">Enter Verification Code</h1>
+            <p style="font-size: 1.45rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
+                We sent a 6-digit code to <strong style="color: var(--navy-900);">{{ masked_email }}</strong>.<br>
+                The code expires in 5 minutes.
+            </p>
+        </div>
+
+        <form method="POST" action="{% url 'verify_otp' %}" id="otpForm">
+            {% csrf_token %}
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="id_otp" style="text-align: center; display: block; margin-bottom: 10px;">
+                    <i class="fa-solid fa-lock" style="color: var(--navy-700);"></i> 6-Digit OTP
+                </label>
+                <input 
+                    type="text" 
+                    name="otp" 
+                    id="id_otp" 
+                    class="form-control" 
+                    placeholder="• • • • • •" 
+                    maxlength="6" 
+                    pattern="[0-9]{6}" 
+                    inputmode="numeric" 
+                    autocomplete="one-time-code" 
+                    required 
+                    autofocus 
+                    style="font-size: 2.4rem; font-family: monospace; letter-spacing: 0.5em; text-align: center; padding: 12px 16px;"
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1.5rem;">
+                <i class="fa-solid fa-check"></i> Verify & Continue
+            </button>
+        </form>
+
+        <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 12px; font-size: 1.4rem;">
+            <div id="resendContainer">
+                {% if cooldown > 0 %}
+                    <span id="cooldownText" style="color: var(--text-muted);">
+                        Resend code in <strong id="timer">{{ cooldown }}</strong>s
+                    </span>
+                    <a href="{% url 'resend_otp' %}" id="resendBtn" class="btn btn-secondary" style="display: none; padding: 8px 16px; font-size: 1.35rem; text-decoration: none;">
+                        <i class="fa-solid fa-rotate-right"></i> Resend Code
+                    </a>
+                {% else %}
+                    <a href="{% url 'resend_otp' %}" id="resendBtn" class="btn btn-secondary" style="padding: 8px 16px; font-size: 1.35rem; text-decoration: none;">
+                        <i class="fa-solid fa-rotate-right"></i> Resend Code
+                    </a>
+                {% endif %}
+            </div>
+
+            <a href="{% url 'forgot_password' %}" style="color: var(--text-muted); text-decoration: none; font-size: 1.35rem;">
+                <i class="fa-solid fa-envelope"></i> Use a different email
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var timerEl = document.getElementById("timer");
+    var cooldownText = document.getElementById("cooldownText");
+    var resendBtn = document.getElementById("resendBtn");
+
+    if (timerEl && cooldownText && resendBtn) {
+        var seconds = parseInt(timerEl.textContent, 10) || 0;
+        if (seconds > 0) {
+            var interval = setInterval(function () {
+                seconds--;
+                if (seconds <= 0) {
+                    clearInterval(interval);
+                    cooldownText.style.display = "none";
+                    resendBtn.style.display = "inline-flex";
+                } else {
+                    timerEl.textContent = seconds;
+                }
+            }, 1000);
+        }
+    }
+});
+</script>
+{% endblock %}

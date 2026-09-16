@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Messages | SkillSwap{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="container" style="max-width: 900px;">
+        <div class="card-header-bar">
+            <div>
+                <h1 style="font-size: 2.8rem; margin-bottom: 4px; color: var(--navy-900);">Messages Inbox</h1>
+                <p class="text-muted" style="font-size: 1.5rem; margin: 0;">Direct discussions with learning partners and mentors</p>
+            </div>
+            <a href="{% url 'matches' %}" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Find New Partners
+            </a>
+        </div>
+
+        {% if users %}
+            <div class="card-glass" style="padding: 0; overflow: hidden;">
+                {% for contact in users %}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid var(--border); transition: background-color var(--transition-fast); flex-wrap: wrap; gap: 14px;">
+                        <a href="{% url 'user_profile' contact.id %}" style="display: flex; align-items: center; gap: 14px; text-decoration: none;">
+                            <span class="avatar-circle avatar-md">
+                                {% if contact.profile.profile_picture and contact.profile.profile_picture.name != 'profile/default.png' %}
+                                    <img src="{{ contact.profile.profile_picture.url }}" alt="{{ contact.username }}">
+                                {% else %}
+                                    {{ contact.username|first|upper }}
+                                {% endif %}
+                            </span>
+                            <div>
+                                <h3 style="font-size: 1.75rem; margin: 0 0 3px 0; color: var(--navy-900);">{{ contact.username }}</h3>
+                                <p class="text-muted" style="font-size: 1.35rem; margin: 0;">
+                                    {% if contact.profile.skills_offered %}
+                                        Teaches: <strong style="color: var(--navy-800);">{{ contact.profile.skills_offered|truncatewords:5 }}</strong>
+                                    {% else %}
+                                        <i class="fa-solid fa-location-dot" style="color: var(--navy-700); margin-right: 3px;"></i> {{ contact.profile.location|default:"Community Member" }}
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </a>
+
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <a href="{% url 'user_profile' contact.id %}" class="btn btn-secondary btn-sm" title="View Profile">
+                                <i class="fa-solid fa-user"></i> Profile
+                            </a>
+                            <a href="{% url 'chat' contact.id %}" class="btn btn-primary btn-sm">
+                                <i class="fa-solid fa-comments"></i> Open Chat
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fa-solid fa-comments"></i>
+                </div>
+                <h3>No active conversations</h3>
+                <p>Browse skills or discover smart matches to connect and coordinate your first exchange.</p>
+                <div style="display: flex; justify-content: center; gap: 12px; margin-top: 16px;">
+                    <a href="{% url 'matches' %}" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> View Smart Matches
+                    </a>
+                    <a href="{% url 'skill_list' %}" class="btn btn-secondary btn-sm">
+                        Explore Skills
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

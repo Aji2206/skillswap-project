@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Smart Matches | SkillSwap{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <!-- Header -->
+        <div class="card-header-bar">
+            <div>
+                <span class="badge badge-slate" style="margin-bottom: 8px;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Compatibility Engine
+                </span>
+                <h1 style="font-size: 3.0rem; margin-bottom: 4px; color: var(--navy-900);">Your Skill Matches</h1>
+                <p class="text-muted" style="font-size: 1.55rem; margin: 0;">
+                    Community peers whose offered skills match what you want to learn, and vice versa.
+                </p>
+            </div>
+            <a href="{% url 'edit_profile' %}" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-sliders"></i> Update My Skills
+            </a>
+        </div>
+
+        <!-- Matches Grid -->
+        {% if matches %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px;">
+                {% for match in matches %}
+                    <div class="card-glass" style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <!-- User Header -->
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                                <a href="{% url 'user_profile' match.user.id %}" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+                                    <span class="avatar-circle avatar-md">
+                                        {% if match.profile.profile_picture and match.profile.profile_picture.name != 'profile/default.png' %}
+                                            <img src="{{ match.profile.profile_picture.url }}" alt="{{ match.user.username }}">
+                                        {% else %}
+                                            {{ match.user.username|first|upper }}
+                                        {% endif %}
+                                    </span>
+                                    <div>
+                                        <h3 style="font-size: 1.85rem; margin: 0 0 2px 0; color: var(--navy-900);">{{ match.user.username }}</h3>
+                                        <span class="text-muted" style="font-size: 1.3rem;">
+                                            <i class="fa-solid fa-location-dot" style="color: var(--navy-700); margin-right: 3px;"></i> {{ match.profile.location|default:"Remote Peer" }}
+                                        </span>
+                                    </div>
+                                </a>
+                                <span class="badge {% if match.percentage >= 70 %}badge-accent{% elif match.percentage >= 40 %}badge-primary{% else %}badge-slate{% endif %}" style="font-size: 1.35rem;">
+                                    {{ match.percentage }}% Match
+                                </span>
+                            </div>
+
+                            <!-- Match Progress Bar -->
+                            <div style="background: var(--bg-muted); height: 6px; border-radius: var(--radius-full); overflow: hidden; margin-bottom: 18px;">
+                                <div style="height: 100%; width: {{ match.percentage }}%; background: {% if match.percentage >= 70 %}var(--accent){% elif match.percentage >= 40 %}var(--navy-900){% else %}var(--navy-600){% endif %}; border-radius: var(--radius-full);"></div>
+                            </div>
+
+                            <!-- Mutual Exchange Highlights -->
+                            <div style="background: #ffffff; border-radius: var(--radius-md); padding: 16px; border: 1px solid var(--border); margin-bottom: 18px;">
+                                {% if match.common_offer %}
+                                    <div style="margin-bottom: 10px;">
+                                        <span style="font-size: 1.2rem; font-weight: 700; color: var(--accent); text-transform: uppercase; display: block; margin-bottom: 3px;">
+                                            <i class="fa-solid fa-arrow-down-left"></i> They Can Teach You:
+                                        </span>
+                                        <span style="font-size: 1.45rem; color: var(--navy-900); font-weight: 600;">{{ match.common_offer }}</span>
+                                    </div>
+                                {% endif %}
+
+                                {% if match.common_need %}
+                                    <div>
+                                        <span style="font-size: 1.2rem; font-weight: 700; color: var(--navy-800); text-transform: uppercase; display: block; margin-bottom: 3px;">
+                                            <i class="fa-solid fa-arrow-up-right"></i> You Can Teach Them:
+                                        </span>
+                                        <span style="font-size: 1.45rem; color: var(--navy-900); font-weight: 600;">{{ match.common_need }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            {% if match.profile.bio %}
+                                <p style="font-size: 1.35rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px; font-style: italic;">
+                                    "{{ match.profile.bio|truncatewords:18 }}"
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Action Footer -->
+                        <div style="border-top: 1px solid var(--border); padding-top: 16px; display: flex; gap: 8px;">
+                            <a href="{% url 'chat' match.user.id %}" class="btn btn-primary btn-sm" style="flex: 2;">
+                                <i class="fa-solid fa-comments"></i> Start Chat
+                            </a>
+                            <a href="{% url 'user_profile' match.user.id %}" class="btn btn-secondary btn-sm" title="View Full Profile">
+                                <i class="fa-solid fa-user"></i> Profile
+                            </a>
+                            <a href="{% url 'review_list' match.user.id %}" class="btn btn-outline btn-sm" title="View Reviews">
+                                <i class="fa-solid fa-star" style="color: #f59e0b;"></i>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fa-solid fa-handshake"></i>
+                </div>
+                <h3>No compatible matches yet</h3>
+                <p>
+                    Make sure your profile has <strong>Skills Offered</strong> and <strong>Skills Wanted</strong> filled in with comma-separated terms (e.g. Python, UI Design, Guitar) so our algorithm can match you with peers.
+                </p>
+                <div style="display: flex; justify-content: center; gap: 12px;">
+                    <a href="{% url 'edit_profile' %}" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-pen-to-square"></i> Update My Skills Now
+                    </a>
+                    <a href="{% url 'skill_list' %}" class="btn btn-secondary btn-sm">
+                        Browse Skill Catalog
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

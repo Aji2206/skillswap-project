@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Leave a Review for {{ reviewee.username }} | SkillSwap{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="container" style="max-width: 680px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <div>
+                <h1 style="font-size: 2.8rem; font-weight: 800; color: var(--navy-900); margin-bottom: 4px;">Review Skill Swap</h1>
+                <p style="font-size: 1.45rem; color: var(--text-muted); margin: 0;">Share feedback on your peer learning session with {{ reviewee.username }}</p>
+            </div>
+            <a href="{% url 'review_list' reviewee.id %}" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-arrow-left"></i> Cancel
+            </a>
+        </div>
+
+        <!-- Target Partner Card -->
+        <div class="card-glass" style="padding: 18px 22px; margin-bottom: 22px; display: flex; align-items: center; gap: 16px;">
+            <span class="avatar-circle avatar-md">
+                {% if reviewee.profile.profile_picture and reviewee.profile.profile_picture.name != 'profile/default.png' %}
+                    <img src="{{ reviewee.profile.profile_picture.url }}" alt="{{ reviewee.username }}">
+                {% else %}
+                    {{ reviewee.username|first|upper }}
+                {% endif %}
+            </span>
+            <div>
+                <h3 style="font-size: 1.8rem; font-weight: 700; color: var(--navy-900); margin: 0 0 2px 0;">{{ reviewee.username }}</h3>
+                <span style="font-size: 1.35rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-location-dot" style="color: var(--navy-700);"></i> {{ reviewee.profile.location|default:"SkillSwap Member" }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Review Form Card -->
+        <div class="card-glass" style="padding: 32px;">
+            <form method="POST" action="{% url 'add_review' reviewee.id %}">
+                {% csrf_token %}
+
+                <!-- Interactive Star Rating Widget -->
+                <div style="text-align: center; margin-bottom: 26px;">
+                    <label style="display: block; font-size: 1.55rem; font-weight: 600; color: var(--navy-900); margin-bottom: 12px;">
+                        How would you rate this skill exchange?
+                    </label>
+                    <div class="star-rating">
+                        <input type="radio" id="star5" name="rating" value="5" required>
+                        <label for="star5" title="5 stars"><i class="fa-solid fa-star"></i></label>
+
+                        <input type="radio" id="star4" name="rating" value="4">
+                        <label for="star4" title="4 stars"><i class="fa-solid fa-star"></i></label>
+
+                        <input type="radio" id="star3" name="rating" value="3" checked>
+                        <label for="star3" title="3 stars"><i class="fa-solid fa-star"></i></label>
+
+                        <input type="radio" id="star2" name="rating" value="2">
+                        <label for="star2" title="2 stars"><i class="fa-solid fa-star"></i></label>
+
+                        <input type="radio" id="star1" name="rating" value="1">
+                        <label for="star1" title="1 star"><i class="fa-solid fa-star"></i></label>
+                    </div>
+                    <div id="ratingFeedback" style="font-size: 1.4rem; font-weight: 600; color: var(--navy-800); min-height: 22px; margin-top: 8px;">
+                        3 / 5 - Good Session
+                    </div>
+                    {% if form.rating.errors %}
+                        <span class="form-error-text">{{ form.rating.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.comment.id_for_label }}">
+                        <i class="fa-solid fa-comment-dots" style="color: var(--navy-700);"></i> Your Detailed Review
+                    </label>
+                    <textarea name="comment" id="{{ form.comment.id_for_label }}" rows="5" class="form-control" placeholder="Share specific details: Was {{ reviewee.username }} helpful, communicative, and clear during the swap? What did you accomplish together?" required></textarea>
+                    <span class="form-help-text">Detailed feedback helps community members find reliable swap partners.</span>
+                    {% if form.comment.errors %}
+                        <span class="form-error-text">{{ form.comment.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 26px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1; padding: 12px;">
+                        <i class="fa-solid fa-check"></i> Post Review
+                    </button>
+                    <a href="{% url 'review_list' reviewee.id %}" class="btn btn-secondary" style="padding: 12px 20px;">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

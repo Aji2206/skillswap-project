@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Request Skill Swap: {{ skill.title }} | SkillSwap{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="container" style="max-width: 750px;">
+        <div class="card-header-bar">
+            <div>
+                <h1 style="font-size: 2.8rem; margin-bottom: 4px; color: var(--navy-900);">Propose a Skill Swap</h1>
+                <p class="text-muted" style="font-size: 1.5rem; margin: 0;">Send a direct barter proposal to {{ skill.user.username }}</p>
+            </div>
+            <a href="{% url 'skill_list' %}" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-arrow-left"></i> Cancel
+            </a>
+        </div>
+
+        <!-- Target Skill Summary -->
+        <div class="card-glass" style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; flex-wrap: wrap; gap: 10px;">
+                <span class="badge badge-slate">{{ skill.category }}</span>
+                <span class="text-muted" style="font-size: 1.3rem;">Offered by <strong style="color: var(--navy-900);">{{ skill.user.username }}</strong></span>
+            </div>
+            <h2 style="font-size: 2.0rem; margin-bottom: 8px; color: var(--navy-900);">{{ skill.title }}</h2>
+            <p style="font-size: 1.45rem; color: var(--text-secondary); margin: 0;">{{ skill.description }}</p>
+        </div>
+
+        <!-- Proposal Form -->
+        <div class="card-glass">
+            <form method="POST" action="{% url 'request_skill' skill.id %}">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="{{ form.requester_name.id_for_label }}">Your Name</label>
+                    <input type="text" name="requester_name" id="{{ form.requester_name.id_for_label }}" value="{{ user.get_full_name|default:user.username }}" placeholder="Enter your full name" required autocomplete="name">
+                    {% if form.requester_name.errors %}
+                        <span class="form-error-text">{{ form.requester_name.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.requester_email.id_for_label }}">Your Email Address</label>
+                    <input type="email" name="requester_email" id="{{ form.requester_email.id_for_label }}" value="{{ user.email }}" placeholder="name@example.com" required autocomplete="email">
+                    {% if form.requester_email.errors %}
+                        <span class="form-error-text">{{ form.requester_email.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.message.id_for_label }}">Proposal Message</label>
+                    <textarea name="message" id="{{ form.message.id_for_label }}" rows="5" placeholder="Hi {{ skill.user.username }}, I would love to learn {{ skill.title }}. In exchange, I can teach you [your skills/topics]. Let me know if you would like to connect for a 1-on-1 session!" required></textarea>
+                    <span class="form-help-text">Explain what you want to learn and specify the skills you can offer in return.</span>
+                    {% if form.message.errors %}
+                        <span class="form-error-text">{{ form.message.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 28px;">
+                    <button type="submit" class="btn btn-primary btn-md" style="flex: 1;">
+                        <i class="fa-solid fa-paper-plane"></i> Send Swap Proposal
+                    </button>
+                    <a href="{% url 'skill_list' %}" class="btn btn-secondary btn-md">
+                        Back to Catalog
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

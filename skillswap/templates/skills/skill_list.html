@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Explore Skills | SkillSwap{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <!-- Header -->
+        <div style="text-align: center; max-width: 680px; margin: 0 auto 36px auto;">
+            <h1 style="font-size: 3.2rem; margin-bottom: 10px; color: var(--navy-900);">Explore Available Skills</h1>
+            <p class="text-muted" style="font-size: 1.6rem; margin: 0;">
+                Connect with mentors, creators, and peers willing to exchange their craft 1-on-1.
+            </p>
+        </div>
+
+        <!-- Search Bar -->
+        <form method="GET" action="{% url 'search_skill' %}" class="search-box">
+            <i class="fa-solid fa-magnifying-glass" style="color: var(--navy-700); font-size: 1.6rem; margin-right: 12px;"></i>
+            <input type="text" name="q" placeholder="Search by skill name, topic, or keyword (e.g. Python, UI Design, Spanish)..." required autocomplete="off">
+            <button type="submit" class="btn btn-primary btn-sm">Search</button>
+        </form>
+
+        <!-- Category Filter Pills -->
+        <div class="filter-bar" style="justify-content: center;">
+            <a href="{% url 'skill_list' %}" class="filter-pill {% if not selected_category or selected_category == 'All' %}active{% endif %}">
+                All Categories
+            </a>
+            <a href="{% url 'skill_list' %}?category=Programming" class="filter-pill {% if selected_category == 'Programming' %}active{% endif %}">
+                <i class="fa-solid fa-code"></i> Programming
+            </a>
+            <a href="{% url 'skill_list' %}?category=Design" class="filter-pill {% if selected_category == 'Design' %}active{% endif %}">
+                <i class="fa-solid fa-palette"></i> Design
+            </a>
+            <a href="{% url 'skill_list' %}?category=Music" class="filter-pill {% if selected_category == 'Music' %}active{% endif %}">
+                <i class="fa-solid fa-music"></i> Music
+            </a>
+            <a href="{% url 'skill_list' %}?category=Language" class="filter-pill {% if selected_category == 'Language' %}active{% endif %}">
+                <i class="fa-solid fa-language"></i> Language
+            </a>
+            <a href="{% url 'skill_list' %}?category=Sports" class="filter-pill {% if selected_category == 'Sports' %}active{% endif %}">
+                <i class="fa-solid fa-dumbbell"></i> Sports & Fitness
+            </a>
+            <a href="{% url 'skill_list' %}?category=Other" class="filter-pill {% if selected_category == 'Other' %}active{% endif %}">
+                <i class="fa-solid fa-shapes"></i> Other
+            </a>
+        </div>
+
+        <!-- Skills Grid -->
+        {% if skills %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-top: 20px;">
+                {% for skill in skills %}
+                    <div class="card-glass" style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <!-- User Topbar -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <a href="{% url 'user_profile' skill.user.id %}" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                                    <span class="avatar-circle avatar-sm">
+                                        {% if skill.user.profile.profile_picture and skill.user.profile.profile_picture.name != 'profile/default.png' %}
+                                            <img src="{{ skill.user.profile.profile_picture.url }}" alt="{{ skill.user.username }}">
+                                        {% else %}
+                                            {{ skill.user.username|first|upper }}
+                                        {% endif %}
+                                    </span>
+                                    <div>
+                                        <span style="font-size: 1.4rem; font-weight: 600; color: var(--navy-900); display: block;">{{ skill.user.username }}</span>
+                                        <span style="font-size: 1.2rem; color: var(--text-muted);">{{ skill.created_at|timesince }} ago</span>
+                                    </div>
+                                </a>
+                                <span class="badge badge-slate">{{ skill.category }}</span>
+                            </div>
+
+                            <h3 style="font-size: 1.85rem; margin-bottom: 8px; color: var(--navy-900);">{{ skill.title }}</h3>
+                            <p style="font-size: 1.4rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 18px;">
+                                {{ skill.description }}
+                            </p>
+                        </div>
+
+                        <!-- Card Action Footer -->
+                        <div style="border-top: 1px solid var(--border); padding-top: 16px; margin-top: 8px; display: flex; gap: 10px; align-items: center;">
+                            {% if request.user == skill.user %}
+                                <div style="display: flex; width: 100%; gap: 8px;">
+                                    <span class="badge badge-slate" style="flex: 1; justify-content: center; padding: 9px; font-size: 1.3rem;">
+                                        <i class="fa-solid fa-user-check"></i> Your Listing
+                                    </span>
+                                    <a href="{% url 'edit_skill' skill.id %}" class="btn btn-secondary btn-sm" title="Edit Skill" style="padding: 8px 14px; font-size: 1.3rem;">
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                    </a>
+                                </div>
+                            {% else %}
+                                <a href="{% url 'request_skill' skill.id %}" class="btn btn-primary btn-sm" style="flex: 1;">
+                                    <i class="fa-solid fa-paper-plane"></i> Propose Swap
+                                </a>
+                                {% if user.is_authenticated %}
+                                    <a href="{% url 'chat' skill.user.id %}" class="btn btn-secondary btn-sm" title="Chat with {{ skill.user.username }}">
+                                        <i class="fa-solid fa-comments"></i>
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'user_profile' skill.user.id %}" class="btn btn-outline btn-sm" title="View Profile">
+                                    <i class="fa-solid fa-user"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fa-solid fa-compass"></i>
+                </div>
+                <h3>No skills found</h3>
+                <p>There are no listings matching "{{ selected_category }}". Try choosing another category or offer this skill yourself!</p>
+                <div style="display: flex; justify-content: center; gap: 12px; margin-top: 16px;">
+                    <a href="{% url 'skill_list' %}" class="btn btn-secondary btn-sm">Clear Filter</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'add_skill' %}" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-plus"></i> Offer a Skill
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

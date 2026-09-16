@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Offer a Skill | SkillSwap{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="container" style="max-width: 700px;">
+        <div class="card-header-bar">
+            <div>
+                <h1 style="font-size: 2.8rem; margin-bottom: 4px; color: var(--navy-900);">Offer a New Skill</h1>
+                <p class="text-muted" style="font-size: 1.5rem; margin: 0;">Share what you know and find peers eager to learn</p>
+            </div>
+            <a href="{% url 'skill_list' %}" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-arrow-left"></i> Back to Catalog
+            </a>
+        </div>
+
+        <div class="card-glass">
+            <form method="POST" action="{% url 'add_skill' %}">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}">
+                        Skill Title
+                    </label>
+                    <input type="text" name="title" id="{{ form.title.id_for_label }}" placeholder="e.g. Python for Beginners, UI/UX in Figma, Conversational Spanish" required autofocus autocomplete="off">
+                    <span class="form-help-text">Give your skill listing a clear, recognizable name.</span>
+                    {% if form.title.errors %}
+                        <span class="form-error-text">{{ form.title.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.category.id_for_label }}">
+                        Category
+                    </label>
+                    <select name="category" id="{{ form.category.id_for_label }}" required>
+                        <option value="Programming">Programming & Tech</option>
+                        <option value="Design">Design & Creative</option>
+                        <option value="Music">Music & Audio</option>
+                        <option value="Language">Languages</option>
+                        <option value="Sports">Fitness & Sports</option>
+                        <option value="Other">Other Skills</option>
+                    </select>
+                    {% if form.category.errors %}
+                        <span class="form-error-text">{{ form.category.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}">
+                        Description & Session Details
+                    </label>
+                    <textarea name="description" id="{{ form.description.id_for_label }}" rows="5" placeholder="Describe your experience, what concepts you can cover (e.g. 1-hour code review, design walkthrough), and any skills you hope to learn in return..." required></textarea>
+                    {% if form.description.errors %}
+                        <span class="form-error-text">{{ form.description.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 28px;">
+                    <button type="submit" class="btn btn-primary btn-md" style="flex: 1;">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Publish Skill Listing
+                    </button>
+                    <a href="{% url 'skill_list' %}" class="btn btn-secondary btn-md">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reviews for {{ reviewee.username }} | SkillSwap{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="container" style="max-width: 860px;">
+        <!-- Header Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+            <div>
+                <a href="{% url 'user_profile' reviewee.id %}" class="btn btn-secondary btn-sm" style="margin-bottom: 12px; display: inline-flex;">
+                    <i class="fa-solid fa-arrow-left"></i> Back to {{ reviewee.username }}'s Profile
+                </a>
+                <h1 style="font-size: 2.8rem; font-weight: 800; color: var(--navy-900); margin-bottom: 4px;">Reviews & Ratings</h1>
+                <p style="font-size: 1.5rem; color: var(--text-muted); margin: 0;">Verified feedback from peer skill exchanges with {{ reviewee.username }}</p>
+            </div>
+            {% if user.is_authenticated and user != reviewee %}
+                <a href="{% url 'add_review' reviewee.id %}" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-pen"></i> Leave a Review
+                </a>
+            {% endif %}
+        </div>
+
+        <!-- Rating Summary Card (Frosted Glass) -->
+        <div class="card-glass" style="margin-bottom: 28px; padding: 28px 32px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px;">
+                <div style="display: flex; align-items: center; gap: 18px;">
+                    <span class="avatar-circle avatar-lg">
+                        {% if reviewee.profile.profile_picture and reviewee.profile.profile_picture.name != 'profile/default.png' %}
+                            <img src="{{ reviewee.profile.profile_picture.url }}" alt="{{ reviewee.username }}">
+                        {% else %}
+                            {{ reviewee.username|first|upper }}
+                        {% endif %}
+                    </span>
+                    <div>
+                        <h2 style="font-size: 2.2rem; font-weight: 700; color: var(--navy-900); margin-bottom: 4px;">{{ reviewee.username }}</h2>
+                        <p style="font-size: 1.4rem; color: var(--text-muted); margin: 0; display: flex; align-items: center; gap: 6px;">
+                            <i class="fa-solid fa-location-dot" style="color: var(--navy-700);"></i> {{ reviewee.profile.location|default:"Community Member" }}
+                        </p>
+                    </div>
+                </div>
+
+                <div style="text-align: right; min-width: 180px;">
+                    <div style="font-size: 3.8rem; font-weight: 800; color: var(--navy-900); line-height: 1;">
+                        {{ average|floatformat:1 }} <span style="font-size: 1.8rem; color: var(--text-muted); font-weight: 500;">/ 5.0</span>
+                    </div>
+                    <div style="color: #f59e0b; font-size: 1.6rem; margin: 6px 0;">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star-half-stroke"></i>
+                    </div>
+                    <span style="font-size: 1.3rem; color: var(--text-muted);">
+                        Based on {{ reviews.count }} verified review{{ reviews.count|pluralize }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews List -->
+        {% if reviews %}
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                {% for review in reviews %}
+                    <div class="card-glass" style="padding: 22px 26px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <span class="avatar-circle avatar-sm">
+                                    {% if review.reviewer.profile.profile_picture and review.reviewer.profile.profile_picture.name != 'profile/default.png' %}
+                                        <img src="{{ review.reviewer.profile.profile_picture.url }}" alt="{{ review.reviewer.username }}">
+                                    {% else %}
+                                        {{ review.reviewer.username|first|upper }}
+                                    {% endif %}
+                                </span>
+                                <div>
+                                    <h4 style="font-size: 1.55rem; font-weight: 600; color: var(--navy-900); margin: 0 0 2px 0;">
+                                        {{ review.reviewer.username }}
+                                    </h4>
+                                    <span style="font-size: 1.25rem; color: var(--text-muted);">{{ review.created_at|date:"F d, Y" }}</span>
+                                </div>
+                            </div>
+                            <div style="color: #f59e0b; font-size: 1.4rem; display: flex; gap: 3px;">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= review.rating %}
+                                        <i class="fa-solid fa-star"></i>
+                                    {% else %}
+                                        <i class="fa-regular fa-star" style="color: #cbd5e1;"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <p style="font-size: 1.45rem; color: var(--text-secondary); line-height: 1.65; margin: 0;">
+                            {{ review.comment }}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fa-regular fa-star"></i>
+                <h3 style="font-size: 1.9rem;">No reviews yet</h3>
+                <p style="font-size: 1.45rem;">Be the first learning partner to share feedback after completing a skill exchange with {{ reviewee.username }}.</p>
+                {% if user.is_authenticated and user != reviewee %}
+                    <a href="{% url 'add_review' reviewee.id %}" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-pen"></i> Submit First Review
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

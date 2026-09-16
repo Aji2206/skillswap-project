@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Skill: {{ skill.title }} | SkillSwap{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="container" style="max-width: 720px;">
+        <!-- Header Bar -->
+        <div class="card-header-bar">
+            <div>
+                <span class="badge badge-slate" style="margin-bottom: 8px;">
+                    <i class="fa-solid fa-pen-to-square"></i> Skill Management
+                </span>
+                <h1 style="font-size: 2.8rem; margin-bottom: 4px; color: var(--navy-900);">Edit Skill Listing</h1>
+                <p class="text-muted" style="font-size: 1.45rem; margin: 0;">Update your skill title, category, or exchange description</p>
+            </div>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Edit Form Card -->
+        <div class="card-glass" style="margin-bottom: 24px;">
+            <form method="POST" action="{% url 'edit_skill' skill.id %}">
+                {% csrf_token %}
+
+                <!-- Skill Title -->
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}">
+                        <i class="fa-solid fa-heading" style="color: var(--navy-700);"></i> Skill Title
+                    </label>
+                    <input type="text" name="title" id="{{ form.title.id_for_label }}" value="{{ form.title.value|default:skill.title }}" class="form-control" placeholder="e.g. Python for Beginners, UI/UX in Figma" required autofocus autocomplete="off">
+                    <span class="form-help-text">Give your skill listing a clear, recognizable name.</span>
+                    {% if form.title.errors %}
+                        <span class="form-error-text">{{ form.title.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Category -->
+                <div class="form-group">
+                    <label for="{{ form.category.id_for_label }}">
+                        <i class="fa-solid fa-tags" style="color: var(--navy-700);"></i> Category
+                    </label>
+                    <select name="category" id="{{ form.category.id_for_label }}" class="form-control" required>
+                        <option value="Programming" {% if skill.category == 'Programming' %}selected{% endif %}>Programming & Tech</option>
+                        <option value="Design" {% if skill.category == 'Design' %}selected{% endif %}>Design & Creative</option>
+                        <option value="Music" {% if skill.category == 'Music' %}selected{% endif %}>Music & Audio</option>
+                        <option value="Language" {% if skill.category == 'Language' %}selected{% endif %}>Languages</option>
+                        <option value="Sports" {% if skill.category == 'Sports' %}selected{% endif %}>Fitness & Sports</option>
+                        <option value="Other" {% if skill.category == 'Other' %}selected{% endif %}>Other Skills</option>
+                    </select>
+                    {% if form.category.errors %}
+                        <span class="form-error-text">{{ form.category.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}">
+                        <i class="fa-solid fa-align-left" style="color: var(--navy-700);"></i> Description & Session Details
+                    </label>
+                    <textarea name="description" id="{{ form.description.id_for_label }}" class="form-control" rows="5" placeholder="Describe your experience, what concepts you cover, and what skills you want to learn in return..." required>{{ form.description.value|default:skill.description }}</textarea>
+                    <span class="form-help-text">Explain what you can cover in a 1-on-1 session and what reciprocal craft you hope to explore.</span>
+                    {% if form.description.errors %}
+                        <span class="form-error-text">{{ form.description.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 12px; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border);">
+                    <button type="submit" class="btn btn-primary btn-md" style="flex: 1;">
+                        <i class="fa-solid fa-check"></i> Save Changes
+                    </button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-md">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Danger Zone: Delete Skill -->
+        <div class="card-glass" style="border-left: 4px solid var(--danger);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <h3 style="font-size: 1.65rem; color: var(--danger); margin: 0 0 4px 0;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Delete This Skill
+                    </h3>
+                    <p style="font-size: 1.35rem; color: var(--text-muted); margin: 0;">
+                        Permanently remove this listing and its incoming barter requests.
+                    </p>
+                </div>
+                <form method="POST" action="{% url 'delete_skill' skill.id %}" onsubmit="return confirm('Are you sure you want to permanently remove {{ skill.title|escapejs }}? This action cannot be undone.');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fa-solid fa-trash"></i> Delete Skill
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

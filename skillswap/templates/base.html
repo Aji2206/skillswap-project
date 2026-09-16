@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SkillSwap | Peer-to-Peer Knowledge Exchange{% endblock %}</title>
+
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+
+    <!-- Production Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- ================= GLOBAL HEADER (GLASSMORPHIC) ================= -->
+<header class="header">
+    <div class="container nav">
+        <a href="{% url 'home' %}" class="nav-brand" aria-label="SkillSwap Home">
+            <span class="nav-brand-icon">
+                <i class="fa-solid fa-arrows-rotate"></i>
+            </span>
+            <span class="nav-brand-title">Skill<span>Swap</span></span>
+        </a>
+
+        <nav class="navbar" id="mainNavbar" aria-label="Primary Navigation">
+            <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                Home
+            </a>
+            <a href="{% url 'skill_list' %}" class="{% if request.resolver_match.url_name == 'skill_list' or request.resolver_match.url_name == 'search_skill' %}active{% endif %}">
+                Explore Skills
+            </a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'matches' %}" class="{% if request.resolver_match.url_name == 'matches' %}active{% endif %}">
+                    Smart Matches
+                </a>
+                <a href="{% url 'inbox' %}" class="{% if request.resolver_match.url_name == 'inbox' or request.resolver_match.url_name == 'chat' %}active{% endif %}">
+                    Messages
+                </a>
+                <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    Dashboard
+                </a>
+            {% else %}
+                <a href="{% url 'home' %}#how">How It Works</a>
+                <a href="{% url 'home' %}#community-vision">Philosophy</a>
+                <a href="{% url 'home' %}#features">Direct Messaging</a>
+            {% endif %}
+        </nav>
+
+        <div class="nav-buttons">
+            {% if user.is_authenticated %}
+                <a href="{% url 'add_skill' %}" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-plus"></i> Offer Skill
+                </a>
+
+                <!-- User Profile Dropdown -->
+                <div class="user-menu">
+                    <button class="user-badge-btn" id="userDropdownBtn" type="button" aria-haspopup="true" aria-expanded="false">
+                        <span class="avatar-circle avatar-sm">
+                            {% if user.profile.profile_picture and user.profile.profile_picture.name != 'profile/default.png' %}
+                                <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}">
+                            {% else %}
+                                {{ user.username|first|upper }}
+                            {% endif %}
+                        </span>
+                        <span>{{ user.username }}</span>
+                        <i class="fa-solid fa-chevron-down" style="font-size:1.1rem; color:var(--text-muted);"></i>
+                    </button>
+
+                    <div class="user-dropdown-menu" id="userDropdownMenu" role="menu">
+                        <a href="{% url 'dashboard' %}" role="menuitem">
+                            <i class="fa-solid fa-gauge" style="color:var(--navy-900);"></i> Dashboard
+                        </a>
+                        <a href="{% url 'profile' %}" role="menuitem">
+                            <i class="fa-solid fa-user" style="color:var(--accent);"></i> My Profile
+                        </a>
+                        <a href="{% url 'edit_profile' %}" role="menuitem">
+                            <i class="fa-solid fa-sliders" style="color:var(--navy-700);"></i> Edit Profile
+                        </a>
+                        <a href="{% url 'inbox' %}" role="menuitem">
+                            <i class="fa-solid fa-comments" style="color:var(--accent);"></i> Messages
+                        </a>
+                        <div class="user-dropdown-divider"></div>
+                        <form method="POST" action="{% url 'logout' %}" style="margin:0;">
+                            {% csrf_token %}
+                            <button type="submit" style="color:var(--danger);" role="menuitem">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-secondary btn-sm">Sign In</a>
+                <a href="{% url 'register' %}" class="btn btn-primary btn-sm">Get Started</a>
+            {% endif %}
+
+            <button id="menu-btn" class="mobile-toggle" type="button" aria-label="Toggle mobile navigation">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- ================= TOAST NOTIFICATIONS ================= -->
+{% if messages %}
+<div class="messages-container" aria-live="polite">
+    {% for message in messages %}
+    <div class="toast-message toast-{{ message.tags }}">
+        <div style="display:flex; align-items:center; gap:10px;">
+            {% if message.tags == 'success' %}
+                <i class="fa-solid fa-circle-check" style="color:var(--success); font-size:1.6rem;"></i>
+            {% elif message.tags == 'error' or message.tags == 'danger' %}
+                <i class="fa-solid fa-circle-exclamation" style="color:var(--danger); font-size:1.6rem;"></i>
+            {% elif message.tags == 'warning' %}
+                <i class="fa-solid fa-triangle-exclamation" style="color:var(--warning); font-size:1.6rem;"></i>
+            {% else %}
+                <i class="fa-solid fa-circle-info" style="color:var(--primary-indigo); font-size:1.6rem;"></i>
+            {% endif %}
+            <span>{{ message }}</span>
+        </div>
+        <button class="toast-close" type="button" aria-label="Dismiss message">&times;</button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- ================= MAIN CONTENT ================= -->
+<main id="main-content">
+    {% block content %}{% endblock %}
+</main>
+
+<!-- ================= PRODUCTION FOOTER ================= -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <a href="{% url 'home' %}" class="nav-brand" style="margin-bottom:14px; color:#ffffff;">
+                    <span class="nav-brand-icon" style="width:34px; height:34px; background:#ffffff; color:var(--navy-950);">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                    </span>
+                    <span class="nav-brand-title" style="color:#ffffff;">Skill<span style="color:#93c5fd;">Swap</span></span>
+                </a>
+                <p style="font-size:1.4rem; color:#94a3b8; line-height:1.65; max-width:320px; margin-top:10px;">
+                    A local peer-to-peer knowledge bartering platform. Share what you excel at, learn directly from peers, and grow together without paywalls.
+                </p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="{% url 'skill_list' %}">Explore Skills</a></li>
+                    <li><a href="{% url 'matches' %}">Smart Matches</a></li>
+                    <li><a href="{% url 'home' %}#how">How It Works</a></li>
+                    <li><a href="{% url 'add_skill' %}">Offer a Skill</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Community</h4>
+                <ul>
+                    <li><a href="{% url 'home' %}#community-vision">Exchange Philosophy</a></li>
+                    <li><a href="{% url 'dashboard' %}">Member Dashboard</a></li>
+                    <li><a href="{% url 'inbox' %}">Direct Messages</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'profile' %}">My Profile</a></li>
+                        <li><a href="{% url 'edit_profile' %}">Edit Profile</a></li>
+                        <li><a href="{% url 'logout_page' %}">Sign Out</a></li>
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Sign In</a></li>
+                        <li><a href="{% url 'register' %}">Create Account</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div>
+                &copy; {% now "Y" %} SkillSwap. Built for direct peer-to-peer knowledge exchange.
+            </div>
+            <div style="display:flex; gap:18px;">
+                <span style="display:inline-flex; align-items:center; gap:6px; color:#5eead4;">
+                    <i class="fa-solid fa-shield-halved"></i> Verified Peer Barter
+                </span>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Back to Top Button -->
+<button id="topBtn" type="button" aria-label="Back to top" title="Back to top">
+    <i class="fa-solid fa-arrow-up"></i>
+</button>
+
+<!-- Production Client Scripts -->
+<script src="{% static 'js/script.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

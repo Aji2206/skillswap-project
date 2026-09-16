@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile | SkillSwap{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="container" style="max-width: 720px;">
+        <div class="card-header-bar">
+            <div>
+                <h1 style="font-size: 2.8rem; margin-bottom: 4px; color: var(--navy-900);">Edit Profile</h1>
+                <p class="text-muted" style="font-size: 1.5rem; margin: 0;">Update your personal details, offered skills, and learning goals</p>
+            </div>
+            <a href="{% url 'profile' %}" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-arrow-left"></i> Back to Profile
+            </a>
+        </div>
+
+        <div class="card-glass">
+            <form method="POST" enctype="multipart/form-data" action="{% url 'edit_profile' %}">
+                {% csrf_token %}
+
+                <!-- Profile Picture Section -->
+                <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 24px; padding: 18px; background: #ffffff; border-radius: var(--radius-md); border: 1px solid var(--border); flex-wrap: wrap;">
+                    <span class="avatar-circle avatar-lg">
+                        {% if profile.profile_picture and profile.profile_picture.name != 'profile/default.png' %}
+                            <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}">
+                        {% else %}
+                            {{ profile.user.username|first|upper }}
+                        {% endif %}
+                    </span>
+                    <div style="flex: 1;">
+                        <label for="{{ form.profile_picture.id_for_label }}" style="margin-bottom: 4px; font-weight: 600; color: var(--navy-900);">
+                            Profile Photo
+                        </label>
+                        <input type="file" name="profile_picture" id="{{ form.profile_picture.id_for_label }}" accept="image/*" style="font-size: 1.35rem; padding: 4px 0;">
+                        <span class="form-help-text">Upload JPG, PNG or WebP image.</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.location.id_for_label }}">Location</label>
+                    <input type="text" name="location" id="{{ form.location.id_for_label }}" value="{{ form.location.value|default_if_none:'' }}" placeholder="e.g. San Francisco, CA or Remote">
+                    {% if form.location.errors %}
+                        <span class="form-error-text">{{ form.location.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.bio.id_for_label }}">Bio & Background</label>
+                    <textarea name="bio" id="{{ form.bio.id_for_label }}" rows="4" placeholder="Briefly describe your experience and what you hope to learn...">{{ form.bio.value|default_if_none:'' }}</textarea>
+                    {% if form.bio.errors %}
+                        <span class="form-error-text">{{ form.bio.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.skills_offered.id_for_label }}">Skills You Can Teach</label>
+                    <textarea name="skills_offered" id="{{ form.skills_offered.id_for_label }}" rows="3" placeholder="e.g. Python, UI/UX Design, Spanish, Guitar (comma-separated)">{{ form.skills_offered.value|default_if_none:'' }}</textarea>
+                    <span class="form-help-text">Separate skills with commas (powers our smart matching engine).</span>
+                    {% if form.skills_offered.errors %}
+                        <span class="form-error-text">{{ form.skills_offered.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.skills_wanted.id_for_label }}">Skills You Want to Learn</label>
+                    <textarea name="skills_wanted" id="{{ form.skills_wanted.id_for_label }}" rows="3" placeholder="e.g. React, French, Graphic Design, Piano (comma-separated)">{{ form.skills_wanted.value|default_if_none:'' }}</textarea>
+                    <span class="form-help-text">Separate skills with commas so mentors and peers can find you.</span>
+                    {% if form.skills_wanted.errors %}
+                        <span class="form-error-text">{{ form.skills_wanted.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 28px;">
+                    <button type="submit" class="btn btn-primary btn-md" style="flex: 1;">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                    </button>
+                    <a href="{% url 'profile' %}" class="btn btn-secondary btn-md">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

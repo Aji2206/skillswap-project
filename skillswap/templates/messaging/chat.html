@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chat with {{ receiver.username }} | SkillSwap{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="container" style="max-width: 860px;">
+        <div class="chat-window">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <a href="{% url 'inbox' %}" class="btn btn-secondary btn-sm" title="Back to Inbox" style="padding: 6px 10px;">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </a>
+                    <a href="{% url 'user_profile' receiver.id %}" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+                        <span class="avatar-circle avatar-sm">
+                            {% if receiver.profile.profile_picture and receiver.profile.profile_picture.name != 'profile/default.png' %}
+                                <img src="{{ receiver.profile.profile_picture.url }}" alt="{{ receiver.username }}">
+                            {% else %}
+                                {{ receiver.username|first|upper }}
+                            {% endif %}
+                        </span>
+                        <div>
+                            <h3 style="font-size: 1.75rem; margin: 0; color: var(--navy-900);">{{ receiver.username }}</h3>
+                            <span class="text-muted" style="font-size: 1.2rem; display: flex; align-items: center; gap: 5px;">
+                                <span style="width: 7px; height: 7px; background: var(--accent); border-radius: 50%; display: inline-block;"></span>
+                                Skill Partner
+                            </span>
+                        </div>
+                    </a>
+                </div>
+
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <a href="{% url 'user_profile' receiver.id %}" class="btn btn-secondary btn-sm">
+                        <i class="fa-solid fa-user"></i> Profile
+                    </a>
+                    <a href="{% url 'add_review' receiver.id %}" class="btn btn-secondary btn-sm">
+                        <i class="fa-solid fa-star" style="color: #f59e0b;"></i> Review
+                    </a>
+                </div>
+            </div>
+
+            <!-- Message Thread -->
+            <div class="chat-body">
+                {% if messages %}
+                    {% for msg in messages %}
+                        <div class="message {% if msg.sender == request.user %}sent{% else %}received{% endif %}">
+                            <div>{{ msg.message }}</div>
+                            <span class="chat-time">{{ msg.timestamp|date:"M d, H:i" }}</span>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="margin: auto; text-align: center; padding: 30px 16px;">
+                        <div class="empty-state-icon">
+                            <i class="fa-solid fa-handshake"></i>
+                        </div>
+                        <h4 style="font-size: 1.8rem; margin-bottom: 6px; color: var(--navy-900);">Start the Conversation</h4>
+                        <p class="text-muted" style="font-size: 1.4rem; max-width: 380px; margin: 0 auto;">
+                            Say hello to {{ receiver.username }} to introduce yourself and coordinate your skill exchange.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Input Bar -->
+            <form method="POST" action="{% url 'chat' receiver.id %}" class="chat-form">
+                {% csrf_token %}
+                <input type="text" name="message" class="message-input" placeholder="Type a message to {{ receiver.username }}..." required autocomplete="off" autofocus>
+                <button type="submit" class="btn btn-primary btn-sm" style="padding: 10px 20px;">
+                    <span>Send</span>
+                    <i class="fa-solid fa-paper-plane" style="font-size: 1.2rem;"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

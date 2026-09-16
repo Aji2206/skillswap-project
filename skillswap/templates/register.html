@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Account | SkillSwap{% endblock %}
+
+{% block content %}
+<div class="page-wrapper" style="display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
+    <div class="card-glass" style="width: 100%; max-width: 480px; padding: 36px 32px;">
+        <div style="text-align: center; margin-bottom: 26px;">
+            <a href="{% url 'home' %}" class="nav-brand" style="justify-content: center; margin-bottom: 16px;">
+                <span class="nav-brand-icon">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                </span>
+                <span class="nav-brand-title">Skill<span>Swap</span></span>
+            </a>
+            <h1 style="font-size: 2.4rem; font-weight: 800; color: var(--navy-900); margin-bottom: 6px;">Join SkillSwap</h1>
+            <p style="font-size: 1.45rem; color: var(--text-muted); margin: 0;">Exchange knowledge, build skills, and connect with peers</p>
+        </div>
+
+        {% if form.errors %}
+            <div id="serverErrorBox" class="alert alert-danger" style="margin-bottom: 20px; font-size: 1.4rem;">
+                <div style="font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-circle-exclamation"></i> Please resolve the following:
+                </div>
+                <ul style="list-style: disc; margin-left: 20px; font-size: 1.35rem;">
+                    {% for field, error_list in form.errors.items %}
+                        {% for error in error_list %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <div id="clientErrorBox" class="alert alert-danger" style="display: none; margin-bottom: 20px; font-size: 1.4rem;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span id="clientErrorMessage"></span>
+            </div>
+        </div>
+
+        <form method="POST" action="{% url 'register' %}" id="registerForm">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">
+                    <i class="fa-solid fa-user" style="color: var(--navy-700);"></i> Username
+                </label>
+                <input type="text" name="username" id="{{ form.username.id_for_label }}" value="{{ form.username.value|default_if_none:'' }}" class="form-control" placeholder="Choose a unique username" required autocomplete="username">
+                <span class="form-error-text" id="usernameError">
+                    {% if form.username.errors %}{{ form.username.errors.0 }}{% endif %}
+                </span>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">
+                    <i class="fa-solid fa-envelope" style="color: var(--navy-700);"></i> Email Address
+                </label>
+                <input type="email" name="email" id="{{ form.email.id_for_label }}" value="{{ form.email.value|default_if_none:'' }}" class="form-control" placeholder="name@example.com" required autocomplete="email">
+                <span class="form-error-text" id="emailError">
+                    {% if form.email.errors %}{{ form.email.errors.0 }}{% endif %}
+                </span>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}">
+                    <i class="fa-solid fa-key" style="color: var(--navy-700);"></i> Password
+                </label>
+                <div style="position: relative;">
+                    <input type="password" name="password1" id="{{ form.password1.id_for_label }}" class="form-control" placeholder="Create a password (min 8 chars)" required autocomplete="new-password" style="padding-right: 44px;">
+                    <button type="button" class="toggle-password" data-target="{{ form.password1.id_for_label }}" aria-label="Toggle password visibility" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1.5rem; padding: 4px;">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+                <span class="form-error-text" id="password1Error">
+                    {% if form.password1.errors %}{{ form.password1.errors.0 }}{% endif %}
+                </span>
+                <span class="form-help-text">Must be at least 8 characters.</span>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}">
+                    <i class="fa-solid fa-check-double" style="color: var(--navy-700);"></i> Confirm Password
+                </label>
+                <div style="position: relative;">
+                    <input type="password" name="password2" id="{{ form.password2.id_for_label }}" class="form-control" placeholder="Re-enter your password" required autocomplete="new-password" style="padding-right: 44px;">
+                    <button type="button" class="toggle-password" data-target="{{ form.password2.id_for_label }}" aria-label="Toggle password visibility" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1.5rem; padding: 4px;">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+                <span class="form-error-text" id="password2Error">
+                    {% if form.password2.errors %}{{ form.password2.errors.0 }}{% endif %}
+                </span>
+            </div>
+
+            <button type="submit" id="registerSubmitBtn" class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 12px; font-size: 1.5rem;">
+                <i class="fa-solid fa-rocket"></i> <span id="registerBtnText">Create Free Account</span>
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 1.45rem; color: var(--text-muted);">
+            Already have an account?
+            <a href="{% url 'login' %}" style="color: var(--navy-900); font-weight: 600;">Sign in here</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("registerForm");
+    const submitBtn = document.getElementById("registerSubmitBtn");
+    const clientBox = document.getElementById("clientErrorBox");
+    const clientMsg = document.getElementById("clientErrorMessage");
+
+    const usernameInput = document.getElementById("{{ form.username.id_for_label }}");
+    const emailInput = document.getElementById("{{ form.email.id_for_label }}");
+    const p1Input = document.getElementById("{{ form.password1.id_for_label }}");
+    const p2Input = document.getElementById("{{ form.password2.id_for_label }}");
+
+    function showError(msg, focusElem) {
+        if (clientBox && clientMsg) {
+            clientMsg.innerText = msg;
+            clientBox.style.display = "block";
+            clientBox.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        if (focusElem) {
+            focusElem.style.borderColor = "var(--danger)";
+            focusElem.focus();
+        }
+    }
+
+    function clearErrors() {
+        if (clientBox) clientBox.style.display = "none";
+        [usernameInput, emailInput, p1Input, p2Input].forEach(inp => {
+            if (inp) inp.style.borderColor = "";
+        });
+    }
+
+    // Real-time password matching check
+    if (p1Input && p2Input) {
+        const checkMatch = () => {
+            if (p1Input.value && p2Input.value && p1Input.value !== p2Input.value) {
+                document.getElementById("password2Error").innerText = "Passwords do not match.";
+                p2Input.style.borderColor = "var(--danger)";
+            } else {
+                document.getElementById("password2Error").innerText = "";
+                p2Input.style.borderColor = "";
+            }
+        };
+        p1Input.addEventListener("input", checkMatch);
+        p2Input.addEventListener("input", checkMatch);
+    }
+
+    if (form) {
+        form.addEventListener("submit", (e) => {
+            clearErrors();
+            const username = usernameInput ? usernameInput.value.trim() : "";
+            const email = emailInput ? emailInput.value.trim() : "";
+            const p1 = p1Input ? p1Input.value : "";
+            const p2 = p2Input ? p2Input.value : "";
+
+            if (!username) {
+                e.preventDefault();
+                showError("Please enter a username.", usernameInput);
+                return;
+            }
+
+            if (!email || !email.includes("@")) {
+                e.preventDefault();
+                showError("Please enter a valid email address.", emailInput);
+                return;
+            }
+
+            if (p1.length < 8) {
+                e.preventDefault();
+                showError("Password must be at least 8 characters.", p1Input);
+                return;
+            }
+
+            if (p1 !== p2) {
+                e.preventDefault();
+                showError("Passwords do not match. Please re-enter.", p2Input);
+                return;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,487 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}SkillSwap | Peer-to-Peer Knowledge Exchange{% endblock %}
+
+{% block content %}
+<!-- ================= SECTION 1: HERO (CLEAN SLATE & SELECTIVE GLASSMORPHISM) ================= -->
+<section class="section-hero" id="home">
+    <div class="container hero-grid">
+        <!-- Hero Left: Strategic Proposition & Interactive Controls -->
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                <span>Local Peer-to-Peer Knowledge Barter</span>
+            </div>
+
+            <h1 class="hero-title">
+                Trade expertise 1-on-1.<br>
+                Learn any skill by <span class="dual-gradient-text">teaching what you know</span>.
+            </h1>
+
+            <p class="hero-lead">
+                A local skill-bartering platform where your knowledge is your currency. Connect directly with peers to exchange hands-on skills without course fees, paywalls, or subscriptions.
+            </p>
+
+            <!-- Interactive Skill Search Bar -->
+            <form method="GET" action="{% url 'search_skill' %}" class="interactive-hero-search" id="heroSearchForm">
+                <i class="fa-solid fa-magnifying-glass" style="color: var(--navy-700); font-size: 1.6rem;"></i>
+                <input type="text" name="q" id="heroSearchInput" placeholder="What skill do you want to learn? (e.g. Python, UI/UX, Spanish)..." required autocomplete="off">
+                <button type="submit" class="btn btn-primary btn-sm">Find Partner</button>
+            </form>
+
+            <!-- Quick Trending Skill Tags -->
+            <div class="quick-tags-strip">
+                <span style="font-weight: 600; color: var(--navy-900);">Popular:</span>
+                <button type="button" class="quick-skill-tag" data-query="Python">Python</button>
+                <button type="button" class="quick-skill-tag" data-query="UI/UX Design">UI/UX Design</button>
+                <button type="button" class="quick-skill-tag" data-query="Spanish">Spanish</button>
+                <button type="button" class="quick-skill-tag" data-query="React">React</button>
+                <button type="button" class="quick-skill-tag" data-query="Guitar">Guitar</button>
+            </div>
+
+            <!-- Button CTAs -->
+            <div class="hero-actions">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">
+                        <i class="fa-solid fa-gauge"></i> Go to Dashboard
+                    </a>
+                    <a href="{% url 'skill_list' %}" class="btn btn-secondary btn-lg">
+                        <i class="fa-solid fa-compass"></i> Explore Skills
+                    </a>
+                {% else %}
+                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
+                        <i class="fa-solid fa-arrow-right"></i> Start Swapping Free
+                    </a>
+                    <a href="{% url 'skill_list' %}" class="btn btn-secondary btn-lg">
+                        <i class="fa-solid fa-compass"></i> Explore Skills
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- Value Proof Strip -->
+            <div class="proof-strip">
+                <span class="proof-item">
+                    <i class="fa-solid fa-circle-check"></i> 100% Free Peer Barter
+                </span>
+                <span class="proof-item">
+                    <i class="fa-solid fa-circle-check"></i> Direct 1-on-1 Sessions
+                </span>
+                <span class="proof-item">
+                    <i class="fa-solid fa-circle-check"></i> Verified Community Reputation
+                </span>
+            </div>
+        </div>
+
+        <!-- Hero Right: Live Reciprocal Barter Demonstration Stage (Frosted Glass Surface) -->
+        <div class="hero-visual">
+            <div class="product-preview-stage">
+                <!-- Top Floating Pill -->
+                <div class="floating-pill floating-pill-top">
+                    <span class="badge-dot" style="background: var(--accent);"></span>
+                    <span><strong>New Proposal:</strong> Maya offered <em>UI/UX</em> for your <em>Python</em></span>
+                    <span class="badge badge-accent" style="font-size: 1.1rem; padding: 2px 7px;">Just now</span>
+                </div>
+
+                <!-- Main Demonstration Card -->
+                <div class="product-exchange-card">
+                    <div class="hero-showcase-bar">
+                        <span class="browser-dot" style="background: #ef4444;"></span>
+                        <span class="browser-dot" style="background: #f59e0b;"></span>
+                        <span class="browser-dot" style="background: #10b981;"></span>
+                        <span style="font-size: 1.2rem; color: var(--text-muted); margin-left: 8px;">skillswap.local/barter/preview</span>
+                    </div>
+
+                    <!-- Compatibility Match Banner -->
+                    <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+                        <span class="badge badge-primary" style="font-size: 1.25rem;">
+                            <i class="fa-solid fa-arrows-rotate"></i> Mutual Compatibility Match
+                        </span>
+                        <span style="font-size: 1.4rem; font-weight: 700; color: var(--navy-900);">
+                            96% Match
+                        </span>
+                    </div>
+
+                    <!-- Person A ⇄ Exchange Circle ⇄ Person B -->
+                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; margin-bottom: 16px;">
+                        <!-- Person A -->
+                        <div class="exchange-node">
+                            <span class="avatar-circle avatar-md avatar-indigo" style="margin: 0 auto 8px auto;">
+                                A
+                            </span>
+                            <strong style="font-size: 1.35rem; display: block; color: var(--navy-900);">Alex</strong>
+                            <span style="font-size: 1.2rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Software Dev</span>
+                            <span class="badge badge-primary" style="font-size: 1.15rem; width: 100%; justify-content: center;">
+                                Teaches: Python
+                            </span>
+                        </div>
+
+                        <!-- Center Barter Relationship -->
+                        <div style="text-align: center;">
+                            <div class="exchange-circle-icon">
+                                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                            </div>
+                            <span style="font-size: 1.1rem; color: var(--text-muted); font-weight: 600; display: block; margin-top: 4px;">1-on-1 Barter</span>
+                        </div>
+
+                        <!-- Person B -->
+                        <div class="exchange-node">
+                            <span class="avatar-circle avatar-md avatar-cyan" style="margin: 0 auto 8px auto;">
+                                M
+                            </span>
+                            <strong style="font-size: 1.35rem; display: block; color: var(--navy-900);">Maya</strong>
+                            <span style="font-size: 1.2rem; color: var(--text-muted); display: block; margin-bottom: 6px;">UI Designer</span>
+                            <span class="badge badge-accent" style="font-size: 1.15rem; width: 100%; justify-content: center;">
+                                Teaches: UI/UX
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Agreement Details -->
+                    <div style="background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+                        <span><i class="fa-regular fa-clock" style="color: var(--navy-700); margin-right: 4px;"></i> 1 hr/week exchange</span>
+                        <span><i class="fa-solid fa-video" style="color: var(--accent); margin-right: 4px;"></i> Code & Design Review</span>
+                    </div>
+
+                    <!-- Action Button -->
+                    <a href="{% url 'skill_list' %}" class="btn btn-primary btn-sm" style="width: 100%; padding: 10px;">
+                        <i class="fa-solid fa-handshake"></i> Propose Reciprocal Barter
+                    </a>
+                </div>
+
+                <!-- Bottom Floating Pill -->
+                <div class="floating-pill floating-pill-bottom">
+                    <i class="fa-solid fa-shield-halved" style="color: var(--navy-800);"></i>
+                    <span><strong>Verified Peer Reputation:</strong> 5.0 / 5.0 score</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= SECTION 2: SKILL DISCOVERY ================= -->
+<section class="section section-discovery" id="featured-skills">
+    <div class="container">
+        <div class="section-header">
+            <span class="badge badge-slate" style="margin-bottom: 10px;">
+                <i class="fa-solid fa-compass"></i> Community Catalog
+            </span>
+            <h2>Explore Available Skills</h2>
+            <p>Browse skills offered by real community members ready for exchange.</p>
+        </div>
+
+        <!-- Category Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin-bottom: 36px;">
+            <a href="{% url 'skill_list' %}?category=Programming" class="category-card">
+                <div class="category-icon-box"><i class="fa-solid fa-code"></i></div>
+                <div>
+                    <strong style="font-size: 1.4rem; display: block; color: var(--navy-900);">Programming</strong>
+                    <span style="font-size: 1.2rem; color: var(--text-muted);">Python, Web, C++</span>
+                </div>
+            </a>
+
+            <a href="{% url 'skill_list' %}?category=Design" class="category-card">
+                <div class="category-icon-box"><i class="fa-solid fa-palette"></i></div>
+                <div>
+                    <strong style="font-size: 1.4rem; display: block; color: var(--navy-900);">UI/UX Design</strong>
+                    <span style="font-size: 1.2rem; color: var(--text-muted);">Figma, Prototyping</span>
+                </div>
+            </a>
+
+            <a href="{% url 'skill_list' %}?category=Language" class="category-card">
+                <div class="category-icon-box"><i class="fa-solid fa-language"></i></div>
+                <div>
+                    <strong style="font-size: 1.4rem; display: block; color: var(--navy-900);">Languages</strong>
+                    <span style="font-size: 1.2rem; color: var(--text-muted);">Spanish, French</span>
+                </div>
+            </a>
+
+            <a href="{% url 'skill_list' %}?category=Music" class="category-card">
+                <div class="category-icon-box"><i class="fa-solid fa-music"></i></div>
+                <div>
+                    <strong style="font-size: 1.4rem; display: block; color: var(--navy-900);">Music & Audio</strong>
+                    <span style="font-size: 1.2rem; color: var(--text-muted);">Guitar, Piano</span>
+                </div>
+            </a>
+
+            <a href="{% url 'skill_list' %}?category=Sports" class="category-card">
+                <div class="category-icon-box"><i class="fa-solid fa-dumbbell"></i></div>
+                <div>
+                    <strong style="font-size: 1.4rem; display: block; color: var(--navy-900);">Fitness & Sports</strong>
+                    <span style="font-size: 1.2rem; color: var(--text-muted);">Workouts, Yoga</span>
+                </div>
+            </a>
+
+            <a href="{% url 'skill_list' %}?category=Other" class="category-card">
+                <div class="category-icon-box"><i class="fa-solid fa-shapes"></i></div>
+                <div>
+                    <strong style="font-size: 1.4rem; display: block; color: var(--navy-900);">Other Crafts</strong>
+                    <span style="font-size: 1.2rem; color: var(--text-muted);">Writing, Strategy</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Real Database Skill Cards -->
+        {% if featured_skills %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
+                {% for skill in featured_skills %}
+                    <div class="card-glass" style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                                <a href="{% url 'user_profile' skill.user.id %}" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                                    <span class="avatar-circle avatar-sm">
+                                        {% if skill.user.profile.profile_picture and skill.user.profile.profile_picture.name != 'profile/default.png' %}
+                                            <img src="{{ skill.user.profile.profile_picture.url }}" alt="{{ skill.user.username }}">
+                                        {% else %}
+                                            {{ skill.user.username|first|upper }}
+                                        {% endif %}
+                                    </span>
+                                    <div>
+                                        <span style="font-size: 1.35rem; font-weight: 600; color: var(--navy-900); display: block;">{{ skill.user.username }}</span>
+                                        <span style="font-size: 1.2rem; color: var(--text-muted);">{{ skill.created_at|timesince }} ago</span>
+                                    </div>
+                                </a>
+                                <span class="badge badge-slate">{{ skill.category }}</span>
+                            </div>
+
+                            <h3 style="font-size: 1.85rem; margin-bottom: 8px; color: var(--navy-900);">{{ skill.title }}</h3>
+                            <p style="font-size: 1.4rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 18px;">
+                                {{ skill.description|truncatewords:20 }}
+                            </p>
+                        </div>
+
+                        <div style="border-top: 1px solid var(--border); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                            <a href="{% url 'request_skill' skill.id %}" class="btn btn-primary btn-sm" style="flex: 1;">
+                                <i class="fa-solid fa-paper-plane"></i> Propose Swap
+                            </a>
+                            <a href="{% url 'user_profile' skill.user.id %}" class="btn btn-secondary btn-sm" title="View Profile">
+                                <i class="fa-solid fa-user"></i>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div style="text-align: center; margin-top: 36px;">
+                <a href="{% url 'skill_list' %}" class="btn btn-secondary btn-md">
+                    Explore All Available Skills <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-shapes"></i>
+                <h3>No skills listed yet</h3>
+                <p>Be the first member to list a skill you can teach and start the exchange community.</p>
+                <a href="{% url 'add_skill' %}" class="btn btn-primary btn-md">
+                    <i class="fa-solid fa-plus"></i> Offer a Skill
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ================= SECTION 3: HOW IT WORKS ================= -->
+<section class="section section-how" id="how" style="background: var(--bg-subtle);">
+    <div class="container">
+        <div class="section-header">
+            <span class="badge badge-slate" style="margin-bottom: 10px;">
+                <i class="fa-solid fa-list-check"></i> The Barter Lifecycle
+            </span>
+            <h2>How SkillSwap Works</h2>
+            <p>Exchange knowledge in 4 simple, transparent steps without financial barriers.</p>
+        </div>
+
+        <div class="connected-flow">
+            <!-- Step 1 -->
+            <div class="flow-step">
+                <div>
+                    <div class="flow-step-badge">1</div>
+                    <h3>List Your Expertise</h3>
+                    <p>Publish skills you can teach—from programming and design to languages, music, and writing.</p>
+                </div>
+                <div style="margin-top: 14px;">
+                    <span class="badge badge-primary" style="font-size: 1.15rem;">
+                        <i class="fa-solid fa-chalkboard-user"></i> e.g. "I teach Python"
+                    </span>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="flow-step">
+                <div>
+                    <div class="flow-step-badge">2</div>
+                    <h3>Set Learning Goals</h3>
+                    <p>Specify the craft, discipline, or software tool you want to master from an experienced peer.</p>
+                </div>
+                <div style="margin-top: 14px;">
+                    <span class="badge badge-accent" style="font-size: 1.15rem;">
+                        <i class="fa-solid fa-book-open"></i> e.g. "I want UI/UX"
+                    </span>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="flow-step">
+                <div>
+                    <div class="flow-step-badge">3</div>
+                    <h3>Smart Compatibility</h3>
+                    <p>Our matching algorithm pairs you with peers whose offered skills match your learning goals.</p>
+                </div>
+                <div style="margin-top: 14px;">
+                    <span class="badge badge-slate" style="font-size: 1.15rem;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> 96% Match
+                    </span>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="flow-step">
+                <div>
+                    <div class="flow-step-badge">4</div>
+                    <h3>Barter & Review</h3>
+                    <p>Message directly, schedule 1-on-1 sessions, exchange skills, and build peer reputation.</p>
+                </div>
+                <div style="margin-top: 14px;">
+                    <span class="badge badge-accent" style="font-size: 1.15rem;">
+                        <i class="fa-solid fa-certificate"></i> Verified Peer Review
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= SECTION 4: WHY 1-ON-1 BARTER ================= -->
+<section class="section" id="community-vision">
+    <div class="container">
+        <div class="section-header">
+            <span class="badge badge-slate" style="margin-bottom: 10px;">
+                <i class="fa-solid fa-scale-balanced"></i> The Barter Difference
+            </span>
+            <h2>Why 1-on-1 Peer Barter Beats Passive Tutorials</h2>
+            <p>Active practice, personal feedback, and mutual accountability beat isolated video watching.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 960px; margin: 0 auto;">
+            <!-- Traditional Courses -->
+            <div class="card" style="border-color: var(--border);">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                    <span style="width: 32px; height: 32px; border-radius: var(--radius-sm); background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                        <i class="fa-solid fa-xmark"></i>
+                    </span>
+                    <h3 style="font-size: 1.85rem; margin: 0; color: var(--navy-900);">Traditional Online Courses</h3>
+                </div>
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 14px; font-size: 1.45rem; color: var(--text-muted);">
+                    <li style="display: flex; gap: 10px; align-items: flex-start;">
+                        <i class="fa-solid fa-circle-xmark" style="color: #ef4444; margin-top: 4px;"></i>
+                        <span>Passive video watching with zero live personalized feedback</span>
+                    </li>
+                    <li style="display: flex; gap: 10px; align-items: flex-start;">
+                        <i class="fa-solid fa-circle-xmark" style="color: #ef4444; margin-top: 4px;"></i>
+                        <span>Expensive monthly subscription fees or locked course paywalls</span>
+                    </li>
+                    <li style="display: flex; gap: 10px; align-items: flex-start;">
+                        <i class="fa-solid fa-circle-xmark" style="color: #ef4444; margin-top: 4px;"></i>
+                        <span>Under 10% average course completion due to solo isolation</span>
+                    </li>
+                    <li style="display: flex; gap: 10px; align-items: flex-start;">
+                        <i class="fa-solid fa-circle-xmark" style="color: #ef4444; margin-top: 4px;"></i>
+                        <span>Generic, one-size-fits-all curricula not tailored to your goals</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- SkillSwap Barter -->
+            <div class="card-glass" style="border: 1.5px solid var(--navy-800); background: #ffffff;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                    <span style="width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--navy-900); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                        <i class="fa-solid fa-check"></i>
+                    </span>
+                    <h3 style="font-size: 1.85rem; margin: 0; color: var(--navy-900);">SkillSwap 1-on-1 Barter</h3>
+                </div>
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 14px; font-size: 1.45rem; color: var(--text-primary); font-weight: 500;">
+                    <li style="display: flex; gap: 10px; align-items: flex-start;">
+                        <i class="fa-solid fa-circle-check" style="color: var(--accent); margin-top: 4px;"></i>
+                        <span>Live, hands-on practice with real-time feedback from practitioners</span>
+                    </li>
+                    <li style="display: flex; gap: 10px; align-items: flex-start;">
+                        <i class="fa-solid fa-circle-check" style="color: var(--accent); margin-top: 4px;"></i>
+                        <span>100% free—your knowledge and time are your only currency</span>
+                    </li>
+                    <li style="display: flex; gap: 10px; align-items: flex-start;">
+                        <i class="fa-solid fa-circle-check" style="color: var(--accent); margin-top: 4px;"></i>
+                        <span>High accountability through mutual reciprocity and commitment</span>
+                    </li>
+                    <li style="display: flex; gap: 10px; align-items: flex-start;">
+                        <i class="fa-solid fa-circle-check" style="color: var(--accent); margin-top: 4px;"></i>
+                        <span>Verified peer reviews build a credible learning reputation</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= SECTION 5: COMMUNITY & MESSAGING ================= -->
+<section class="section" id="features" style="background: var(--bg-subtle);">
+    <div class="container">
+        <div class="showcase-grid">
+            <div>
+                <span class="badge badge-slate" style="margin-bottom: 14px;">
+                    <i class="fa-solid fa-comments"></i> Direct Coordination
+                </span>
+                <h2 style="font-size: 3.0rem; margin-bottom: 16px; color: var(--navy-900);">
+                    Built-In Direct Peer Messaging
+                </h2>
+                <p style="font-size: 1.6rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+                    Every successful exchange begins with clear alignment. Use SkillSwap's direct messenger to outline session goals, share reference code and design links, and establish mutually convenient schedules.
+                </p>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a href="{% url 'inbox' %}" class="btn btn-primary btn-md">
+                        <i class="fa-solid fa-comments"></i> Open Messages
+                    </a>
+                    <a href="{% url 'matches' %}" class="btn btn-secondary btn-md">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> View Smart Matches
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <div class="showcase-card">
+                    <img src="{% static 'images/communication_exchange.png' %}" alt="Communication, Skill, Message, People Exchange">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= SECTION 6: FINAL ACTION CALL ================= -->
+<section class="container">
+    <div class="section-cta-dual" style="text-align: center; max-width: 900px; margin-left: auto; margin-right: auto;">
+        <span class="badge" style="margin-bottom: 16px; background: rgba(255, 255, 255, 0.12); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.2);">
+            <i class="fa-solid fa-rocket"></i> Get Started
+        </span>
+        <h2 style="font-size: 3.4rem; margin-bottom: 16px; color: #ffffff;">Ready to Learn Something New?</h2>
+        <p style="font-size: 1.65rem; color: rgba(255, 255, 255, 0.85); line-height: 1.65; margin-bottom: 30px; max-width: 620px; margin-left: auto; margin-right: auto;">
+            Join our community of peers exchanging practical knowledge every day. No course fees, no subscriptions.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+            {% if user.is_authenticated %}
+                <a href="{% url 'add_skill' %}" class="btn btn-secondary btn-lg" style="background: #ffffff; color: var(--navy-900); border-color: #ffffff;">
+                    <i class="fa-solid fa-plus"></i> Offer a Skill Now
+                </a>
+                <a href="{% url 'skill_list' %}" class="btn btn-outline btn-lg" style="color: #ffffff; border-color: rgba(255, 255, 255, 0.4);">
+                    Explore Skills
+                </a>
+            {% else %}
+                <a href="{% url 'register' %}" class="btn btn-secondary btn-lg" style="background: #ffffff; color: var(--navy-900); border-color: #ffffff;">
+                    <i class="fa-solid fa-arrow-right"></i> Create Free Account
+                </a>
+                <a href="{% url 'skill_list' %}" class="btn btn-outline btn-lg" style="color: #ffffff; border-color: rgba(255, 255, 255, 0.4);">
+                    Browse Skills Catalog
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
